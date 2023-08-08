@@ -15,34 +15,68 @@ de tamaño N, establecido por el usuario.
 */
 
 #include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
 #include <omp.h>
 
-int main () {
-    int N;
+void fillMatrixRandom(int mat[][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            mat[i][j] = rand() % 11;  
+        }
+    }
+}
 
-    printf("Ingrese el tamaño de los vectores con los que quiere trabajar.\n");
-    scanf("%d", N);
-    
-    double A[N], B[N], C[N], X;
+void matrixMultiplication(int mat1[][3], int mat2[][3], int result[][3]) {
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            result[i][j] = 0;
+            for (int k = 0; k < 3; k++) {
+                result[i][j] += mat1[i][k] * mat2[k][j];
+            }
+        }
+    }
+}
+
+int main() {
+    srand(time(0)); 
+
+    int A[3][3];
+    int B[3][3];
+    double X;
 
     printf("\nIngrese el numero de threads con los que desea trabajar.\n");
     scanf("%d", X);
     omp_set_num_threads(X);
 
-    int i, j;
-	
-	for (i=0; i<N; i++) A[i] = i;
-	for (i=0; i<N; i++) B[i] = i;
+    fillMatrixRandom(A);
+    fillMatrixRandom(B);
 
+    int resultMatrix[3][3];
+    matrixMultiplication(A, B, resultMatrix);
 
-    for (i = 0; i < N; i++) {
-        C[i] = A[i];
+    printf("Matriz 1:\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf("%d ", A[i][j]);
+        }
+        printf("\n");
     }
 
-    #pragma omp parallel
-    {
-        #pragma omp for reduction(+:sum)
-        //Código a ejecutar
+    printf("\nMatriz 2:\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf("%d ", B[i][j]);
+        }
+        printf("\n");
+    }
+
+    printf("\nResultado:\n");
+    for (int i = 0; i < 3; i++) {
+        for (int j = 0; j < 3; j++) {
+            printf("%d ", resultMatrix[i][j]);
+        }
+        printf("\n");
     }
 
     return 0;
