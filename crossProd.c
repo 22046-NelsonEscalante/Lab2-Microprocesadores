@@ -9,8 +9,9 @@ Laboratorio 2
 Nelson Escalante - 22046
 Nicolle Gordillo - 22246
 --------------------------------------------
-Calcular el producto cruz entre dos vectores
-de tamaño N, establecido por el usuario.
+Calcular el producto matricial entre dos vectores 
+de 3*3, con el número de threads a utilizar 
+establecido por el usuario.
 --------------------------------------------
 */
 
@@ -28,11 +29,15 @@ void fillMatrixRandom(int mat[][3]) {
 }
 
 void matrixMultiplication(int mat1[][3], int mat2[][3], int result[][3]) {
-    for (int i = 0; i < 3; i++) {
-        for (int j = 0; j < 3; j++) {
-            result[i][j] = 0;
-            for (int k = 0; k < 3; k++) {
-                result[i][j] += mat1[i][k] * mat2[k][j];
+    #pragma omp parallel
+    {
+        #pragma omp for
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                result[i][j] = 0;
+                for (int k = 0; k < 3; k++) {
+                    result[i][j] += mat1[i][k] * mat2[k][j];
+                }
             }
         }
     }
@@ -43,10 +48,10 @@ int main() {
 
     int A[3][3];
     int B[3][3];
-    double X;
+    int X;
 
     printf("\nIngrese el numero de threads con los que desea trabajar.\n");
-    scanf("%d", X);
+    scanf("%d", &X);
     omp_set_num_threads(X);
 
     fillMatrixRandom(A);
